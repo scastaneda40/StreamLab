@@ -144,35 +144,40 @@ async function enqueue(type, jobId, attempt = 1) {
 app.get("/api/health", (req, res) => res.json({ ok: true }));
 
 app.post("/api/jobs", async (req, res) => {
-  const { title = "Upload", s3Key = null, sourceMeta = {} } = req.body || {};
+  try {
+    const { title = "Upload", s3Key = null, sourceMeta = {} } = req.body || {};
 
-  const id = nanoid();
-  const now = Date.now();
-  const STAGES = ["Transcode", "Thumbnail", "QC", "Package"].map((n) => ({
-    name: n,
-    status: "queued",
-    startedAt: null,
-    endedAt: null,
-  }));
+    const id = nanoid();
+    const now = Date.now();
+    const STAGES = ["Transcode", "Thumbnail", "QC", "Package"].map((n) => ({
+      name: n,
+      status: "queued",
+      startedAt: null,
+      endedAt: null,
+    }));
 
-  const job = {
-    id,
-    title,
-    status: "queued",
-    createdAt: now,
-    updatedAt: now,
-    stages: STAGES,
-    logs: [`[${new Date().toISOString()}] Job created.`],
-    artifacts: {},
-    qcMarkers: [],
-    source: s3Key ? { bucket: BUCKET, key: s3Key, ...sourceMeta } : null,
-  };
+    const job = {
+      id,
+      title,
+      status: "queued",
+      createdAt: now,
+      updatedAt: now,
+      stages: STAGES,
+      logs: [`[${new Date().toISOString()}] Job created.`],
+      artifacts: {},
+      qcMarkers: [],
+      source: s3Key ? { bucket: BUCKET, key: s3Key, ...sourceMeta } : null,
+    };
 
-  await putJob(job);
-  await indexJob(id);
+    await putJob(job);
+    await indexJob(id);
 
-  await enqueue("Transcode", id, 1);
-  res.status(201).json(job);
+    await enqueue("Transcode", id, 1);
+    res.status(201).json(job);
+  } catch (err) {
+    console.error("create job:", err);
+    res.status(500).json({ error: "Failed to create job" });
+  }
 });
 
 app.get("/api/jobs", async (_req, res) => res.json(await listJobs()));
