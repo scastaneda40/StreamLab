@@ -1,0 +1,4 @@
+{
+  "VisibilityTimeout": "60",
+  "RedrivePolicy": "{\"deadLetterTargetArn\":\"arn:aws:sqs:us-west-1:477817641496:streamlab-pipeline-dlq\",\"maxReceiveCount\":\"5\"}"
+}

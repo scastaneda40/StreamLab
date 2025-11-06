@@ -1,0 +1,34 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "SQSAccessForPipelineQueue",
+      "Effect": "Allow",
+      "Action": [
+        "sqs:ReceiveMessage",
+        "sqs:DeleteMessage",
+        "sqs:ChangeMessageVisibility",
+        "sqs:GetQueueAttributes",
+        "sqs:SendMessage"
+      ],
+      "Resource": "arn:aws:sqs:us-west-1:477817641496:streamlab-pipeline"
+    },
+    {
+      "Sid": "DynamoTableAccess",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:Query"
+      ],
+      "Resource": "arn:aws:dynamodb:us-west-1:477817641496:table/StreamLab"
+    },
+    {
+      "Sid": "S3RWForYourBucket",
+      "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:PutObject", "s3:HeadObject"],
+      "Resource": "arn:aws:s3:::streamlab-dev-stephencastaneda/*"
+    }
+  ]
+}
