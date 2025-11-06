@@ -144,41 +144,20 @@ async function enqueue(type, jobId, attempt = 1) {
 app.get("/api/health", (req, res) => res.json({ ok: true }));
 
 app.post("/api/jobs", async (req, res) => {
-  try {
-    const { title = "Upload", s3Key = null, sourceMeta = {} } = req.body || {};
-
-    const id = nanoid();
-    const now = Date.now();
-    const STAGES = ["Transcode", "Thumbnail", "QC", "Package"].map((n) => ({
-      name: n,
-      status: "queued",
-      startedAt: null,
-      endedAt: null,
-    }));
-
-    const job = {
-      id,
-      title,
-      status: "queued",
-      createdAt: now,
-      updatedAt: now,
-      stages: STAGES,
-      logs: [`[${new Date().toISOString()}] Job created.`],
-      artifacts: {},
-      qcMarkers: [],
-      source: s3Key ? { bucket: BUCKET, key: s3Key, ...sourceMeta } : null,
-    };
-
-    await putJob(job);
-    await indexJob(id);
-
-    await enqueue("Transcode", id, 1);
-    console.log("Job created and enqueued:", job); // Add this line
-    res.status(201).json(job);
-  } catch (err) {
-    console.error("create job:", err);
-    res.status(500).json({ error: "Failed to create job" });
-  }
+  // Temporarily return a static response to test Render's JSON handling
+  console.log("Returning static job response for testing.");
+  res.status(201).json({
+    id: "test-job-123",
+    title: "Static Test Job",
+    status: "queued",
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    stages: [],
+    logs: ["Static job created."],
+    artifacts: {},
+    qcMarkers: [],
+    source: null,
+  });
 });
 
 app.get("/api/jobs", async (_req, res) => res.json(await listJobs()));
