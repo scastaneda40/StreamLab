@@ -62,7 +62,7 @@ graph TD
     AWSServices -- DynamoDB --> DynamoDBTable
     AWSServices -- S3 --> S3Bucket
     AWSServices -- SQS --> SQSQueue
-    SQSQueue -->|Triggers (e.g., for processing)| LambdaProcessor
+    SQSQueue -->|Triggers for processing| LambdaProcessor
 ```
 
 **Key Architectural Decisions:**
