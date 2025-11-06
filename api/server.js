@@ -169,11 +169,31 @@ app.post("/api/jobs", async (req, res) => {
       source: s3Key ? { bucket: BUCKET, key: s3Key, ...sourceMeta } : null,
     };
 
-    await putJob(job);
-    await indexJob(id);
+    try {
+      await putJob(job);
+      console.log("putJob successful");
+    } catch (putErr) {
+      console.error("Error in putJob:", putErr);
+      return res.status(500).json({ error: "Failed to save job metadata" });
+    }
 
-    await enqueue("Transcode", id, 1);
-    console.log("Job created and enqueued:", job); // Keep this for now
+    try {
+      await indexJob(id);
+      console.log("indexJob successful");
+    } catch (indexErr) {
+      console.error("Error in indexJob:", indexErr);
+      return res.status(500).json({ error: "Failed to index job" });
+    }
+
+    try {
+      await enqueue("Transcode", id, 1);
+      console.log("enqueue successful");
+    } catch (enqueueErr) {
+      console.error("Error in enqueue:", enqueueErr);
+      return res.status(500).json({ error: "Failed to enqueue job" });
+    }
+
+    console.log("Job created and enqueued:", job);
     res.status(201).json(job);
   } catch (err) {
     console.error("create job:", err);
