@@ -144,20 +144,9 @@ async function enqueue(type, jobId, attempt = 1) {
 app.get("/api/health", (req, res) => res.json({ ok: true }));
 
 app.post("/api/jobs", async (req, res) => {
-  // Temporarily return a static response to test Render's JSON handling
-  console.log("Returning static job response for testing.");
-  res.status(201).json({
-    id: "test-job-123",
-    title: "Static Test Job",
-    status: "queued",
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-    stages: [],
-    logs: ["Static job created."],
-    artifacts: {},
-    qcMarkers: [],
-    source: null,
-  });
+  // Temporarily return a simple string response to test Render's response handling
+  console.log("Returning static string response for testing.");
+  res.status(201).send("Static test response: Job created.");
 });
 
 app.get("/api/jobs", async (_req, res) => res.json(await listJobs()));
