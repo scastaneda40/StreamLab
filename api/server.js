@@ -116,6 +116,7 @@ async function addToCatalog(job) {
       },
     })
   );
+  console.log("Added to catalog:", job.id, job.title); // Add this line
 }
 async function listCatalog() {
   const r = await ddb.send(
