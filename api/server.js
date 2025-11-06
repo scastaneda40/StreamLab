@@ -234,8 +234,9 @@ app.post("/api/jobs/:id/publish", async (req, res) => {
 app.get("/api/catalog", async (_req, res) => res.json(await listCatalog()));
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`StreamLab API listening on http://localhost:${PORT}`);
+const HOST = "0.0.0.0"; // Listen on all network interfaces
+app.listen(PORT, HOST, () => {
+  console.log(`StreamLab API listening on http://${HOST}:${PORT}`);
   console.log("Region:", REGION);
   console.log("DDB Table:", TABLE);
   console.log("S3 Bucket:", BUCKET);
