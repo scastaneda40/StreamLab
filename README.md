@@ -47,13 +47,13 @@ The application follows a client-server architecture, with the frontend consumin
 
 ```mermaid
 graph TD
-    User[User] -->|Accesses Web App| Render_Frontend[Render Static Site (Frontend)]
-    Render_Frontend -->|API Requests (HTTPS)| Render_Backend[Render Web Service (Backend)]
+    User[User] -->|Accesses Web App| Render_Frontend[Render Static Site Frontend]
+    Render_Frontend -->|API Requests (HTTPS)| Render_Backend[Render Web Service Backend]
     Render_Backend -->|Interacts with AWS| AWS_Services[AWS Services]
-    AWS_Services -- DynamoDB --> DynamoDB_Table[DynamoDB Table (StreamLab)]
-    AWS_Services -- S3 --> S3_Bucket[S3 Bucket (streamlab-dev-stephencastaneda)]
-    AWS_Services -- SQS --> SQS_Queue[SQS Queue (streamlab-pipeline)]
-    SQS_Queue -->|Triggers (e.g., for processing)| Lambda_Processor[AWS Lambda (Job Processor - *Future/Option B*)]
+    AWS_Services -- DynamoDB --> DynamoDB_Table[DynamoDB Table StreamLab]
+    AWS_Services -- S3 --> S3_Bucket[S3 Bucket streamlab-dev-stephencastaneda]
+    AWS_Services -- SQS --> SQS_Queue[SQS Queue streamlab-pipeline]
+    SQS_Queue -->|Triggers (e.g., for processing)| Lambda_Processor[AWS Lambda Job Processor - *Future/Option B*]
 ```
 
 **Key Architectural Decisions:**
@@ -143,3 +143,4 @@ This starts the web app at **http://localhost:5173** (Vite default). Ensure your
 - The media processing pipeline is simulated for demonstration purposes; actual transcoding is not performed. A pre-baked HLS URL and fabricated QC markers are used for playback.
 - The deployment strategy on Render showcases practical application deployment with continuous integration, while leveraging AWS for managed services.
 - Attention has been paid to accessibility (A11y) in the frontend UI.
+- **Known Issue:** Clicking "Publish" currently results in duplicate entries in the catalog (e.g., "Inside Out" and your video appearing twice). This is under investigation.
