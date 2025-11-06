@@ -195,6 +195,7 @@ app.post("/api/jobs", async (req, res) => {
     }
 
     console.log("Job created and enqueued:", job);
+    res.setHeader("Content-Type", "application/json"); // Explicitly set Content-Type
     res.status(201).json(job);
   } catch (err) {
     console.error("create job:", err);
