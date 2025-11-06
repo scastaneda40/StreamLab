@@ -141,6 +141,7 @@ async function enqueue(type, jobId, attempt = 1) {
 }
 
 // Routes
+app.get("/", (req, res) => res.send("StreamLab API is running!")); // Added for basic connectivity test
 app.get("/api/health", (req, res) => res.json({ ok: true }));
 
 app.post("/api/jobs", async (req, res) => {
