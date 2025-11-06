@@ -173,6 +173,7 @@ app.post("/api/jobs", async (req, res) => {
     await indexJob(id);
 
     await enqueue("Transcode", id, 1);
+    console.log("Job created and enqueued:", job); // Add this line
     res.status(201).json(job);
   } catch (err) {
     console.error("create job:", err);
