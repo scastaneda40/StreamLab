@@ -39,10 +39,18 @@ export default function JobDetail() {
   const { id } = useParams();
   const nav = useNavigate();
 
+  // Redirect if ID is missing
+  useEffect(() => {
+    if (!id) {
+      nav("/jobs");
+    }
+  }, [id, nav]);
+
   const q = useQuery({
     queryKey: ["job", id],
     queryFn: async () => (await api.get(`/jobs/${id}`)).data as Job,
     refetchInterval: 1500,
+    enabled: !!id, // Only run query if id is available
   });
 
   const replay = useMutation({
@@ -54,7 +62,7 @@ export default function JobDetail() {
   });
 
   const job = q.data;
-  if (!job) return <p>Loading…</p>;
+  if (!id || !job) return <p>Loading…</p>; // Show loading or redirect if id is missing
 
   const openSigned = async (key: string, bucket?: string) => {
     const params = new URLSearchParams({ key });

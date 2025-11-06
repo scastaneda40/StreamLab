@@ -3,16 +3,16 @@ import { api } from "../lib/api";
 import { useNavigate } from "react-router-dom";
 
 export default function Upload() {
-  const [title, setTitle] = useState("Inside Out — Sample"); // will auto-fill from filename
+  const [title, setTitle] = useState("Inside Out — Sample");
   const [chaos, setChaos] = useState(true);
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const nav = useNavigate();
 
-  const MAX_SIZE = 500 * 1024 * 1024; // 500 MB, adjust as you like
+  const MAX_SIZE = 500 * 1024 * 1024;
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0] || null;
     if (f) {
       if (!f.type.startsWith("video/")) {
@@ -27,7 +27,6 @@ export default function Upload() {
         setFile(null);
         return;
       }
-      // Default title from filename (without extension) if user hasn't edited yet
       if (title === "Inside Out — Sample" || title.trim() === "") {
         const base = f.name.replace(/\.[^.]+$/, "");
         setTitle(base);
@@ -47,12 +46,28 @@ export default function Upload() {
 
       if (file) {
         const key = `raw/${crypto.randomUUID()}-${file.name}`;
-        const { data } = await api.post("/upload-url", { key });
-        await fetch(data.url, {
+
+        // ask API for presigned URL
+        const { data: up } = await api.post("/upload-url", {
+          key,
+          contentType: file.type || "application/octet-stream",
+        });
+        if (!up?.url) {
+          throw new Error(
+            "API did not return a presigned URL. Check VITE_API_URL and server logs."
+          );
+        }
+
+        // upload file directly to S3
+        const putRes = await fetch(up.url, {
           method: "PUT",
           body: file,
           headers: { "Content-Type": file.type || "application/octet-stream" },
         });
+        if (!putRes.ok) {
+          throw new Error(`S3 upload failed with ${putRes.status}`);
+        }
+
         s3Key = key;
         contentType = file.type;
         size = file.size;
@@ -61,13 +76,18 @@ export default function Upload() {
         setMessage("ℹ️ No file selected, job will use sample data.");
       }
 
-      const res = await api.post("/jobs", {
+      // create job
+      const { data: job } = await api.post("/jobs", {
         title,
         chaosEnabled: chaos,
         s3Key,
-        sourceMeta: { contentType, size }, // 👉 send to API
+        sourceMeta: { contentType, size },
       });
-      nav(`/jobs/${res.data.id}`);
+      if (!job?.id) {
+        throw new Error("API did not return a job id.");
+      }
+
+      nav(`/jobs/${job.id}`);
     } catch (err) {
       console.error(err);
       setMessage("❌ Upload failed. See console for details.");
@@ -97,7 +117,7 @@ export default function Upload() {
       <input
         id="file"
         type="file"
-        accept="video/*" // ✅ only videos
+        accept="video/*"
         className="mb-4"
         onChange={handleFileChange}
       />
