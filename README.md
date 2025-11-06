@@ -48,7 +48,7 @@ The application follows a client-server architecture, with the frontend consumin
 ```mermaid
 graph TD
     User[User] -->|Accesses Web App| Render_Frontend[Render Static Site Frontend]
-    Render_Frontend -->|API Requests (HTTPS)| Render_Backend[Render Web Service Backend]
+    Render_Frontend -->|API Requests (HTTPS)| Backend[Render Web Service Backend]
     Render_Backend -->|Interacts with AWS| AWS_Services[AWS Services]
     AWS_Services -- DynamoDB --> DynamoDB_Table[DynamoDB Table StreamLab]
     AWS_Services -- S3 --> S3_Bucket[S3 Bucket streamlab-dev-stephencastaneda]
