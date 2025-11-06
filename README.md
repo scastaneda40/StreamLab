@@ -47,13 +47,22 @@ The application follows a client-server architecture, with the frontend consumin
 
 ```mermaid
 graph TD
-    User[User] -->|Accesses Web App| Render_Frontend[Render Static Site Frontend]
-    Render_Frontend -->|API Requests (HTTPS)| Backend[Render Web Service Backend]
-    Render_Backend -->|Interacts with AWS| AWS_Services[AWS Services]
-    AWS_Services -- DynamoDB --> DynamoDB_Table[DynamoDB Table StreamLab]
-    AWS_Services -- S3 --> S3_Bucket[S3 Bucket streamlab-dev-stephencastaneda]
-    AWS_Services -- SQS --> SQS_Queue[SQS Queue streamlab-pipeline]
-    SQS_Queue -->|Triggers (e.g., for processing)| Lambda_Processor[AWS Lambda Job Processor - *Future/Option B*]
+    User[User]
+    Frontend[Render Static Site Frontend]
+    Backend[Render Web Service Backend]
+    AWSServices[AWS Services]
+    DynamoDBTable[DynamoDB Table StreamLab]
+    S3Bucket[S3 Bucket streamlab-dev-stephencastaneda]
+    SQSQueue[SQS Queue streamlab-pipeline]
+    LambdaProcessor[AWS Lambda Job Processor - *Future/Option B*]
+
+    User -->|Accesses Web App| Frontend
+    Frontend -->|API Requests HTTPS| Backend
+    Backend -->|Interacts with AWS| AWSServices
+    AWSServices -- DynamoDB --> DynamoDBTable
+    AWSServices -- S3 --> S3Bucket
+    AWSServices -- SQS --> SQSQueue
+    SQSQueue -->|Triggers (e.g., for processing)| LambdaProcessor
 ```
 
 **Key Architectural Decisions:**
